@@ -13,14 +13,17 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* height: 471px;
-    width: 460px; */
-
-
+    
 }
 
 .logo {
     margin-bottom: 40px;
+    
+}
+
+.logo-gamepage{
+    height: 32px;
+    width: 71.97039794921875px;
 }
 
 .pick-player-container{
@@ -118,3 +121,137 @@ button {
     box-shadow: 0px 10px 0px 0px #108d87;
 }
 
+.hide{
+    display: none;
+}
+
+.game-board{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr 284px repeat(3, 1fr);
+    height: 623px;
+    width: 460px;
+}
+
+.header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    grid-column: 1/4;
+    height: 52px;
+    width: 457px;
+}
+
+
+
+.reload-button{
+    width: 52px;
+    height: 52px;
+    margin: 0;
+    background: #A8BEC9;
+    box-shadow: inset 0px -4px 0px #6b8896;
+    border-radius: 15px;
+}
+
+#board{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-row: 2/5;
+    grid-column: 1/4;
+    justify-content: center;
+    gap: 20px;
+}
+
+.tile{
+    width: 140px;
+    height: 140px;
+    background: #1F3641;
+    box-shadow: inset 0px -8px 0px #10212A;
+    border-radius: 15px;
+    cursor: pointer;
+    position: relative;
+}
+
+.center {
+    position: absolute; /* set the child element as absolute*/
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+}
+
+.turn-view{
+    display: flex;
+    height: 52px;
+    width: 140px;
+    box-shadow: inset 0px -4px 0px #10212A;
+    border-radius: 10px;
+    right: 10px;
+    justify-content: space-evenly;
+    align-items: center;
+    
+}
+
+.turn-wrapper{
+    position: relative;
+}
+.turn-svg{
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    position: relative;
+    left: 12px;
+    color: #A8BFC9;
+}
+
+.turn-o{
+    display: none;
+}
+
+.game-statistics {
+    display: flex;
+    grid-column: 1/4;
+    grid-row: 5;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.stat{
+    height: 72px;
+    width: 140px;
+    border-radius: 15px;
+}
+
+.your-scores {
+    background: #30c3bc;
+}
+
+.ties {
+    background: #A9BEC9;
+}
+
+.cpu-scores{
+    background: #f3b136;
+}
+
+.stats{
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: 0.875px;
+    text-align: center;
+    color: #10212A;
+    margin-bottom: 0;
+}
+
+.figure {
+    color: #10212A;    
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 30px;
+    letter-spacing: 1.5px;
+    text-align: center;
+    margin: 0;
+    
+
+}

@@ -48,22 +48,112 @@ tile.appendChild(oSvg.cloneNode(true));
 board.appendChild(tile);
 }
 
+
+
+let winningCombinations = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]];
+
+let  randomSvgIndex = Math.floor(Math.random() * (9 - 2 + 1) + 2);
+const xsvgs = document.querySelectorAll(".x");
+const osvgs = document.querySelectorAll(".o");
 const tiles = document.querySelectorAll(".tile");
-tiles.forEach(tile => {
+
+function firstMove(){
+  setTimeout(() => {
+    xsvgs[randomSvgIndex].style.display = "block";
+  }, 500); 
+}
+
+function secondMove(playerMove){
+  setTimeout (() => {
+      // filter out the combinations that have the player's move
+      let availableCombinations = winningCombinations.filter(combination => !combination.includes(playerMove));
+    
+      // filter out the combinations that have the random move
+      availableCombinations = availableCombinations.filter(combination => combination.includes(randomSvgIndex));
+    
+      // select a random combination that has the random move and doesn't have the player's move
+      let nextMoveCombination = availableCombinations[Math.floor(Math.random() * availableCombinations.length)];
+    
+      // select the next move (tile) that is not the random move and not the player's move
+      let nextMoveTile = nextMoveCombination.find(tile => tile !== randomSvgIndex && tile !== playerMove);
+    
+      // mark the next move (tile)
+      xsvgs[nextMoveTile].style.display = "block";
+    }
+    
+
+  ,1000)
+}
+
+function thirdMove(){
+
+}
+
+let playerMove;
+if (player == 0){
+  firstMove();
+
+  function getPlayerMove() {
+    return new Promise((resolve, reject) => {
+      tiles.forEach((tile, index) => {
+        tile.addEventListener('click', () => {
+          resolve(index);
+        });
+      });
+    });
+  }
+  
+  getPlayerMove()
+    .then(playerMove => {
+      secondMove(playerMove);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+
+    
+    function getPlayerSecondMove() {
+      return new Promise((resolve, reject) => {
+        tiles.forEach((tile, index) => {
+          tile.addEventListener('click', () => {
+            resolve(index);
+          });
+        });
+      });
+    }
+    
+    getPlayerSecondMove()
+      .then(playerMove => {
+        thirdMove(playerMove);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  
+}
+
+
+tiles.forEach((tile, index) => {
+  
+  if (index !== randomSvgIndex){
+    console.log(randomSvgIndex, index)
     tile.addEventListener('click', () => {
-       if (player == 0){
-        const svgs = tile.querySelectorAll(".o");
-        svgs.forEach(svg => {
-            svg.style.display = "block";
-        });
+        if (player == 0){
+            const svgs = tile.querySelectorAll(".o");
+            svgs.forEach(svg => {
+                svg.style.display = "block";  
+            });
          } else{
-        const svgs = tile.querySelectorAll(".x");
-        svgs.forEach(svg => {
-            svg.style.display = "block";
-        });
-        }
+            const svgs = tile.querySelectorAll(".x");
+            svgs.forEach(svg => {
+                svg.style.display = "block";  
+            });
+         }
+    });
+  }
 });
-});
+
+
 
 
 

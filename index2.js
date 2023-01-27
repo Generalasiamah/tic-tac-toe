@@ -56,42 +56,86 @@ let  randomSvgIndex = Math.floor(Math.random() * (9 - 2 + 1) + 2);
 const xsvgs = document.querySelectorAll(".x");
 const osvgs = document.querySelectorAll(".o");
 const tiles = document.querySelectorAll(".tile");
+let playerMove;
+let secondCpuMove;
+let playerFirstMove;
 
-function firstMove(){
+function firstCPUMove(){
   setTimeout(() => {
     xsvgs[randomSvgIndex].style.display = "block";
   }, 500); 
 }
 
-function secondMove(playerMove){
-  setTimeout (() => {
+function secondCPUMove(playerMove) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
       // filter out the combinations that have the player's move
       let availableCombinations = winningCombinations.filter(combination => !combination.includes(playerMove));
-    
+
       // filter out the combinations that have the random move
       availableCombinations = availableCombinations.filter(combination => combination.includes(randomSvgIndex));
-    
+
       // select a random combination that has the random move and doesn't have the player's move
       let nextMoveCombination = availableCombinations[Math.floor(Math.random() * availableCombinations.length)];
-    
+
       // select the next move (tile) that is not the random move and not the player's move
       let nextMoveTile = nextMoveCombination.find(tile => tile !== randomSvgIndex && tile !== playerMove);
-    
+
       // mark the next move (tile)
       xsvgs[nextMoveTile].style.display = "block";
+
+      resolve({playerMove, nextMoveTile}); // resolve the promise with the next move tile
+    }, 1000);
+  });
+}
+
+function thirdMove(secondPlayerMove, secondCpuMove, playerMove) {
+  setTimeout(() => {
+  let thirdCpuMove;
+
+  // check if CPU can complete a winning combination
+  winningCombinations.forEach(combination => {
+    if (combination.includes(randomSvgIndex) && combination.includes(secondCpuMove)) {
+      let missingTile = combination.find(tile => ![randomSvgIndex, secondCpuMove, playerMove].includes(tile));
+      if (missingTile && !xsvgs[missingTile].style.display && !osvgs[missingTile].style.display) {
+        thirdCpuMove = missingTile;
+      }
     }
-    
+  });
 
-  ,1000)
+  if (!thirdCpuMove) {
+    // check if player is about to complete a winning combination
+    winningCombinations.forEach(combination => {
+      if (combination.includes(playerMove) && combination.includes(secondPlayerMove)) {
+        let missingTile = combination.find(tile => ![randomSvgIndex, secondPlayerMove, playerMove].includes(tile));
+        if (missingTile && !xsvgs[missingTile].style.display && !osvgs[missingTile].style.display) {
+          thirdCpuMove = missingTile;
+        }
+      }
+    });
+  }
+
+  if (!thirdCpuMove) {
+    // randomly select an available tile for the third move
+    let availableTiles = [];
+    tiles.forEach((tile, index) => {
+      if (!xsvgs[index].style.display && !osvgs[index].style.display) {
+        availableTiles.push(index);
+      }
+    });
+    thirdCpuMove = availableTiles[Math.floor(Math.random() * availableTiles.length)];
+  }
+
+  // mark the third move
+  xsvgs[thirdCpuMove].style.display = "block";
+}, 1000);
 }
 
-function thirdMove(){
 
-}
 
-let playerMove;
-if (player == 0){
-  firstMove();
+
+if (player == 0) {
+  firstCPUMove();
 
   function getPlayerMove() {
     return new Promise((resolve, reject) => {
@@ -102,17 +146,14 @@ if (player == 0){
       });
     });
   }
-  
+
   getPlayerMove()
     .then(playerMove => {
-      secondMove(playerMove);
+      return secondCPUMove(playerMove);
     })
-    .catch(error => {
-      console.log(error);
-    });
-
-    
-    function getPlayerSecondMove() {
+    .then(({playerMove, nextMoveTile}) => {
+      secondCpuMove = nextMoveTile; // assign the next move tile to the variable
+      playerFirstMove = playerMove;
       return new Promise((resolve, reject) => {
         tiles.forEach((tile, index) => {
           tile.addEventListener('click', () => {
@@ -120,23 +161,22 @@ if (player == 0){
           });
         });
       });
-    }
-    
-    getPlayerSecondMove()
-      .then(playerMove => {
-        thirdMove(playerMove);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  
+    })
+    .then((secondPlayerMove) => {
+      thirdMove(secondPlayerMove, secondCpuMove, playerFirstMove);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+
+        if 
 }
 
 
 tiles.forEach((tile, index) => {
   
   if (index !== randomSvgIndex){
-    console.log(randomSvgIndex, index)
+
     tile.addEventListener('click', () => {
         if (player == 0){
             const svgs = tile.querySelectorAll(".o");

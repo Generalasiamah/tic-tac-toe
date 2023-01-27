@@ -1,6 +1,7 @@
 var selectedPlayer = [];
 
 const buttons = document.querySelectorAll('.selector');
+selectedPlayer.push(0);
 
 buttons[0].addEventListener('click', () => {
     buttons[0].style.background = '#A8BFC9';

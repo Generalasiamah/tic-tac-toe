@@ -60,6 +60,23 @@ let playerMove;
 let secondCpuMove;
 let playerFirstMove;
 
+function checkForWin(winningCombinations, svgs) {
+  for (let i = 0; i < winningCombinations.length; i++) {
+    let win = true;
+    for (let j = 0; j < winningCombinations[i].length; j++) {
+      if (svgs[winningCombinations[i][j]].style.display !== "block") {
+        win = false;
+        break;
+      }
+    }
+    if (win) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
 function firstCPUMove(){
   setTimeout(() => {
     xsvgs[randomSvgIndex].style.display = "block";
@@ -89,46 +106,51 @@ function secondCPUMove(playerMove) {
   });
 }
 
-function thirdMove(secondPlayerMove, secondCpuMove, playerMove) {
-  setTimeout(() => {
-  let thirdCpuMove;
+function thirdMove(secondPlayerMove, secondCpuMove) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      let thirdCpuMove;
+// check if CPU can complete a winning combination
+winningCombinations.forEach(combination => {
+  if (combination.includes(randomSvgIndex) && combination.includes(secondCpuMove)) {
+    let missingTile = combination.find(tile => ![randomSvgIndex, secondCpuMove, playerFirstMove].includes(tile));
+    if (missingTile && !xsvgs[missingTile].style.display && !osvgs[missingTile].style.display) {
+      thirdCpuMove = missingTile;
+    }
+  }
+});
 
-  // check if CPU can complete a winning combination
+if (!thirdCpuMove) {
+  // check if player is about to complete a winning combination
   winningCombinations.forEach(combination => {
-    if (combination.includes(randomSvgIndex) && combination.includes(secondCpuMove)) {
-      let missingTile = combination.find(tile => ![randomSvgIndex, secondCpuMove, playerMove].includes(tile));
+    if (combination.includes(playerFirstMove) && combination.includes(secondPlayerMove)) {
+      let missingTile = combination.find(tile => ![randomSvgIndex, secondPlayerMove, playerFirstMove].includes(tile));
       if (missingTile && !xsvgs[missingTile].style.display && !osvgs[missingTile].style.display) {
         thirdCpuMove = missingTile;
       }
     }
   });
+}
 
-  if (!thirdCpuMove) {
-    // check if player is about to complete a winning combination
-    winningCombinations.forEach(combination => {
-      if (combination.includes(playerMove) && combination.includes(secondPlayerMove)) {
-        let missingTile = combination.find(tile => ![randomSvgIndex, secondPlayerMove, playerMove].includes(tile));
-        if (missingTile && !xsvgs[missingTile].style.display && !osvgs[missingTile].style.display) {
-          thirdCpuMove = missingTile;
-        }
-      }
-    });
-  }
+if (!thirdCpuMove) {
+  // randomly select an available tile for the third move
+  let availableTiles = [];
+  tiles.forEach((tile, index) => {
+    if (!xsvgs[index].style.display && !osvgs[index].style.display) {
+      availableTiles.push(index);
+    }
+  });
+  thirdCpuMove = availableTiles[Math.floor(Math.random() * availableTiles.length)];
+}
 
-  if (!thirdCpuMove) {
-    // randomly select an available tile for the third move
-    let availableTiles = [];
-    tiles.forEach((tile, index) => {
-      if (!xsvgs[index].style.display && !osvgs[index].style.display) {
-        availableTiles.push(index);
-      }
-    });
-    thirdCpuMove = availableTiles[Math.floor(Math.random() * availableTiles.length)];
-  }
+// mark the third move
+xsvgs[thirdCpuMove].style.display = "block";
 
-  // mark the third move
-  xsvgs[thirdCpuMove].style.display = "block";
-}, 1000);
+      
+      // resolve the promise
+      resolve(thirdCpuMove);
+    }, 1000);
+  });
 }
 
 
@@ -152,6 +174,7 @@ if (player == 0) {
       return secondCPUMove(playerMove);
     })
     .then(({playerMove, nextMoveTile}) => {
+  
       secondCpuMove = nextMoveTile; // assign the next move tile to the variable
       playerFirstMove = playerMove;
       return new Promise((resolve, reject) => {
@@ -163,16 +186,24 @@ if (player == 0) {
       });
     })
     .then((secondPlayerMove) => {
-      thirdMove(secondPlayerMove, secondCpuMove, playerFirstMove);
-    })
-    .catch(error => {
-      console.log(error);
+      thirdMove(secondPlayerMove, secondCpuMove).then((thirdCpuMove) => {
+        if (checkForWin(winningCombinations, xsvgs)) {
+          alert("CPU wins!");
+
+        // }else{
+        //   // thirdMove()
+        // } 
+        // } else if (checkForWin(winningCombinations, osvgs)) {
+        //   console.log("Player wins!");
+        // } else {
+        //   console.log("It's a tie!");
+        // }
+      }
+      
+})
     });
 
-        if 
-}
-
-
+  }
 tiles.forEach((tile, index) => {
   
   if (index !== randomSvgIndex){
